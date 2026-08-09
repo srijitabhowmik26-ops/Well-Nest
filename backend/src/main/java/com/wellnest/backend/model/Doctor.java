@@ -13,18 +13,25 @@ public class Doctor {
     private Long id;
 
     private String name;
-    private String specialization;
-    private int experience;
+    private String spec;
+    private String dept;
+    private int exp;
+    private String location;
     private double rating;
+    private String avail;
 
     public Doctor() {
     }
 
-    public Doctor(String name, String specialization, int experience, double rating) {
+    public Doctor(String name, String spec, String dept, int exp,
+                  String location, double rating, String avail) {
         this.name = name;
-        this.specialization = specialization;
-        this.experience = experience;
+        this.spec = spec;
+        this.dept = dept;
+        this.exp = exp;
+        this.location = location;
         this.rating = rating;
+        this.avail = avail;
     }
 
     public Long getId() {
@@ -35,32 +42,55 @@ public class Doctor {
         return name;
     }
 
-    public String getSpecialization() {
-        return specialization;
+    public String getSpec() {
+        return spec;
     }
 
-    public int getExperience() {
-        return experience;
+    public String getDept() {
+        return dept;
+    }
+
+    public int getExp() {
+        return exp;
+    }
+
+    public String getLocation() {
+        return location;
     }
 
     public double getRating() {
         return rating;
     }
 
+    public String getAvail() {
+        return avail;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
 
-    public void setSpecialization(String specialization) {
-        this.specialization = specialization;
+    public void setSpec(String spec) {
+        this.spec = spec;
     }
 
-    public void setExperience(int experience) {
-        this.experience = experience;
+    public void setDept(String dept) {
+        this.dept = dept;
+    }
+
+    public void setExp(int exp) {
+        this.exp = exp;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 
     public void setRating(double rating) {
         this.rating = rating;
     }
-}
 
+    public void setAvail(String avail) {
+        this.avail = avail;
+    }
+}

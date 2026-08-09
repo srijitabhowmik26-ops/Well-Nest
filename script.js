@@ -83,6 +83,38 @@ function saveDB(){ localStorage.setItem(DB_KEY, JSON.stringify(DB)); }
 let DB = loadDB();
 let currentUser = null; // set on login
 
+async function syncDoctorsToBackend() {
+  console.log("Starting doctor sync...");
+
+  try {
+    const response = await fetch("http://localhost:8080/api/doctors", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        name: "Dr. Ananya Sharma",
+        spec: "Cardiologist",
+        dept: "Cardiology",
+        exp: 12,
+        location: "Kolkata",
+        rating: 4.9,
+        avail: "Available Today"
+      })
+    });
+
+    console.log("Response status:", response.status);
+
+    const data = await response.json();
+
+    console.log("Doctor saved:", data);
+
+    alert("Doctor added successfully!");
+  } catch (error) {
+    console.error("Backend error:", error);
+    alert("Could not connect to backend!");
+  }
+}
 /* --------------------------------------------------------------
    2. SMALL HELPERS
    -------------------------------------------------------------- */
@@ -875,3 +907,4 @@ function renderAll(role){
 renderLandingDoctors();
 history.replaceState({view:'landing'}, '', '#landing');
 goToView('landing', {pushHistory:false});
+syncDoctorsToBackend();

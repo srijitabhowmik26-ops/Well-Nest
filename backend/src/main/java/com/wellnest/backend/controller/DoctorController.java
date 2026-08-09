@@ -23,4 +23,8 @@ public class DoctorController {
     public List<Doctor> getAllDoctors() {
         return doctorRepository.findAll();
     }
+    @PostMapping
+    public Doctor addDoctor(@RequestBody Doctor doctor) {
+    return doctorRepository.save(doctor);
+}
 }
