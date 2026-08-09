@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Well Nest — Healthcare Management</title>
+
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<!-- Fraunces (display serif) + Public Sans (body) + IBM Plex Mono (data/utility) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============ REUSABLE LOGO (SVG symbol, referenced with <use>) ============ -->
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="nestmark" viewBox="0 0 48 48">
+    <path d="M6 30c4-10 14-16 18-16s14 6 18 16" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+    <path d="M10 34c3-8 10-13 14-13s11 5 14 13" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" opacity="0.55"/>
+    <path d="M24 14c-3 3-3 8 0 11 3-3 3-8 0-11z" fill="currentColor"/>
+  </symbol>
+</svg>
+
+<!-- =================================================================== -->
+<!-- TOAST (small confirmation messages, e.g. "Appointment booked")      -->
+<!-- =================================================================== -->
+<div id="toast" class="toast" aria-live="polite"></div>
+
+<!-- =================================================================== -->
+<!-- APP ROOT — one view is visible at a time, swapped by script.js      -->
+<!-- =================================================================== -->
+<div id="app">
+
+  <!-- ================= PUBLIC NAV (landing + auth pages) ================= -->
+  <nav class="public-nav" id="publicNav">
+    <a href="#" class="brand" data-nav="landing">
+      <span class="brand-mark"><svg><use href="#nestmark"/></svg></span>
+      <span class="brand-name">Well&nbsp;Nest</span>
+    </a>
+    <button class="nav-toggle" id="publicNavToggle" aria-label="Open menu"><i class="fa-solid fa-bars"></i></button>
+    <ul class="public-nav-links" id="publicNavLinks">
+      <li><a href="#home">Home</a></li>
+      <li><a href="#doctors">Doctors</a></li>
+      <li><a href="#services">Services</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <button class="btn btn-primary btn-sm" data-nav="auth" data-authmode="login">Log in</button>
+  </nav>
+
+  <!-- ========================================================================= -->
+  <!-- LANDING PAGE                                                              -->
+  <!-- ========================================================================= -->
+  <section class="view active" id="view-landing">
+
+    <!-- ---------- HERO ---------- -->
+    <header class="hero" id="home">
+      <div class="hero-copy">
+        <p class="eyebrow">Care that keeps track, so you don't have to</p>
+        <h1>Your health,<br>our priority.</h1>
+        <p class="hero-sub">Manage appointments, doctors, medical records and prescriptions in one calm, well-kept place.</p>
+        <div class="hero-actions">
+          <button class="btn btn-primary" data-nav="auth" data-authmode="register" data-role="patient">Book an appointment</button>
+          <button class="btn btn-ghost" data-scroll="doctors">Find a doctor</button>
+        </div>
+        <div class="hero-stats">
+          <div><strong>48</strong><span>Specialists on call</span></div>
+          <div><strong>1,250+</strong><span>Patients cared for</span></div>
+          <div><strong>24/7</strong><span>Emergency support</span></div>
+        </div>
+      </div>
+
+      <!-- SIGNATURE ELEMENT: the "nest" — concentric woven rings cradling a pulse line -->
+      <div class="hero-visual" aria-hidden="true">
+        <svg viewBox="0 0 420 420" class="nest-svg">
+          <circle cx="210" cy="210" r="170" class="ring ring-1"/>
+          <circle cx="210" cy="210" r="136" class="ring ring-2"/>
+          <circle cx="210" cy="210" r="102" class="ring ring-3"/>
+          <path class="nest-weave" d="M60 250c30-70 90-120 150-120s120 50 150 120" />
+          <path class="nest-weave weave-2" d="M85 275c26-62 78-104 125-104s99 42 125 104" />
+          <path class="pulse" d="M120 220h40l15-45 20 90 18-55 12 25h95" />
+          <circle cx="210" cy="210" r="10" class="nest-egg"/>
+        </svg>
+      </div>
+    </header>
+
+    <!-- ---------- SERVICES ---------- -->
+    <section class="section services" id="services">
+      <p class="eyebrow center">What Well Nest holds for you</p>
+      <h2 class="section-title center">Every part of your care, in one nest</h2>
+      <div class="card-grid">
+        <div class="service-card">
+          <i class="fa-solid fa-calendar-check"></i>
+          <h3>Doctor Appointments</h3>
+          <p>Book, reschedule or cancel visits with specialists in a few taps.</p>
+        </div>
+        <div class="service-card">
+          <i class="fa-solid fa-folder-heart"></i>
+          <h3>Medical Records</h3>
+          <p>A running timeline of every consultation, test and diagnosis.</p>
+        </div>
+        <div class="service-card">
+          <i class="fa-solid fa-pills"></i>
+          <h3>Prescriptions</h3>
+          <p>Clear dosages and schedules, ready to print for the pharmacy.</p>
+        </div>
+        <div class="service-card">
+          <i class="fa-solid fa-chart-line"></i>
+          <h3>Health Reports</h3>
+          <p>Lab results and reports filed and searchable, whenever needed.</p>
+        </div>
+        <div class="service-card">
+          <i class="fa-solid fa-truck-medical"></i>
+          <h3>Emergency Support</h3>
+          <p>A direct line to urgent care when minutes matter most.</p>
+        </div>
+        <div class="service-card">
+          <i class="fa-solid fa-video"></i>
+          <h3>Online Consultation</h3>
+          <p>Speak with a doctor remotely for follow-ups and quick questions.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- DOCTORS PREVIEW ---------- -->
+    <section class="section" id="doctors">
+      <p class="eyebrow center">Meet a few of our specialists</p>
+      <h2 class="section-title center">Doctors ready to see you</h2>
+      <div class="card-grid" id="landingDoctorGrid"></div>
+      <div class="center" style="margin-top:28px">
+        <button class="btn btn-primary" data-nav="auth" data-authmode="register" data-role="patient">See all doctors</button>
+      </div>
+    </section>
+
+    <!-- ---------- ABOUT ---------- -->
+    <section class="section about" id="about">
+      <div class="about-grid">
+        <div>
+          <p class="eyebrow">Why Well Nest</p>
+          <h2 class="section-title">Built to hold your whole care story</h2>
+          <p>Well Nest brings appointments, records, prescriptions and hospital operations into a single, well-kept system — built for patients who want clarity, doctors who want less paperwork, and administrators who need the full picture at a glance.</p>
+        </div>
+        <div class="about-figures">
+          <div class="figure"><strong>27</strong><span>Beds available today</span></div>
+          <div class="figure"><strong>86</strong><span>Appointments today</span></div>
+          <div class="figure"><strong>12</strong><span>Departments</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- FOOTER ---------- -->
+    <footer class="footer" id="contact">
+      <div class="footer-grid">
+        <div>
+          <a href="#" class="brand" data-nav="landing">
+            <span class="brand-mark"><svg><use href="#nestmark"/></svg></span>
+            <span class="brand-name" style="color:#FBFCFA">Well&nbsp;Nest</span>
+          </a>
+          <p style="margin-top:14px; max-width:280px;">A calm, well-kept home for your appointments, records and prescriptions.</p>
+          <div class="footer-social">
+            <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="#" aria-label="Twitter"><i class="fa-brands fa-x-twitter"></i></a>
+            <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+          </div>
+        </div>
+        <div>
+          <h4>Quick links</h4>
+          <ul class="footer-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#doctors">Doctors</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#" data-nav="auth" data-authmode="login">Login</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Services</h4>
+          <ul class="footer-links">
+            <li><a href="#services">Doctor Appointments</a></li>
+            <li><a href="#services">Medical Records</a></li>
+            <li><a href="#services">Prescriptions</a></li>
+            <li><a href="#services">Emergency Support</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Contact</h4>
+          <ul class="footer-links">
+            <li><i class="fa-solid fa-location-dot"></i> Siliguri, West Bengal</li>
+            <li><i class="fa-solid fa-phone"></i> +91 90000 00000</li>
+            <li><i class="fa-solid fa-envelope"></i> care@wellnest.in</li>
+          </ul>
+        </div>
+      </div>
+      <p class="footer-bottom">© 2026 Well Nest. All rights reserved.</p>
+    </footer>
+  </section> <!-- /view-landing -->
+
+  <!-- ========================================================================= -->
+  <!-- AUTH VIEW — Login + Register                                             -->
+  <!-- ========================================================================= -->
+  <section class="view" id="view-auth">
+    <a href="#" class="auth-back-mobile" data-nav="landing">
+      <i class="fa-solid fa-arrow-left"></i> Back to home
+    </a>
+    <div class="auth-wrap">
+      <div class="auth-side">
+        <a href="#" class="link-muted" data-nav="landing" style="color:#B9CDC1;display:inline-flex;align-items:center;gap:6px;margin-bottom:8px">
+          <i class="fa-solid fa-arrow-left"></i> Back to home
+        </a>
+        <span class="brand-mark lg"><svg><use href="#nestmark"/></svg></span>
+        <h2>A calm place to keep your care.</h2>
+        <p>Log in to reach your appointments, records and prescriptions — or create an account to get started.</p>
+      </div>
+
+      <div class="auth-card">
+
+        <!-- ---- LOGIN FORM ---- -->
+        <form id="loginForm" class="auth-form" novalidate>
+          <div class="auth-tabs">
+            <button type="button" class="auth-tab active" data-authmode="login">Log in</button>
+            <button type="button" class="auth-tab" data-authmode="register">Register</button>
+          </div>
+          <h3>Welcome back</h3>
+
+          <label>Email or username
+            <input type="text" id="loginId" placeholder="you@example.com">
+            <span class="field-error" id="err-loginId"></span>
+          </label>
+          <label>Password
+            <input type="password" id="loginPassword" placeholder="••••••••">
+            <span class="field-error" id="err-loginPassword"></span>
+          </label>
+
+          <div class="auth-row">
+            <label class="checkbox"><input type="checkbox" id="rememberMe"> Remember me</label>
+            <a href="#" class="link-muted" id="forgotPasswordLink">Forgot password?</a>
+          </div>
+
+          <label>Log in as
+            <select id="loginRole">
+              <option value="patient">Patient</option>
+              <option value="doctor">Doctor</option>
+              <option value="admin">Admin</option>
+            </select>
+          </label>
+
+          <button type="submit" class="btn btn-primary btn-block">Log in</button>
+          <p class="auth-switch">New here? <a href="#" data-authmode="register">Create an account</a></p>
+        </form>
+
+        <!-- ---- REGISTER FORM ---- -->
+        <form id="registerForm" class="auth-form hidden" novalidate>
+          <div class="auth-tabs">
+            <button type="button" class="auth-tab" data-authmode="login">Log in</button>
+            <button type="button" class="auth-tab active" data-authmode="register">Register</button>
+          </div>
+          <h3>Create your account</h3>
+
+          <label>Full name
+            <input type="text" id="regName" placeholder="Rahul Sharma">
+            <span class="field-error" id="err-regName"></span>
+          </label>
+          <label>Email
+            <input type="email" id="regEmail" placeholder="you@example.com">
+            <span class="field-error" id="err-regEmail"></span>
+          </label>
+          <label>Phone number
+            <input type="tel" id="regPhone" placeholder="98765 43210">
+            <span class="field-error" id="err-regPhone"></span>
+          </label>
+          <label>Date of birth
+            <input type="date" id="regDob">
+            <span class="field-error" id="err-regDob"></span>
+          </label>
+          <label>Password
+            <input type="password" id="regPassword" placeholder="At least 6 characters">
+            <span class="field-error" id="err-regPassword"></span>
+          </label>
+          <label>Confirm password
+            <input type="password" id="regConfirmPassword" placeholder="Re-enter password">
+            <span class="field-error" id="err-regConfirmPassword"></span>
+          </label>
+
+          <label>I am registering as
+            <select id="regRole">
+              <option value="patient">Patient</option>
+              <option value="doctor">Doctor</option>
+            </select>
+          </label>
+
+          <button type="submit" class="btn btn-primary btn-block">Create account</button>
+          <p class="auth-switch">Already have an account? <a href="#" data-authmode="login">Log in</a></p>
+        </form>
+
+      </div>
+    </div>
+  </section> <!-- /view-auth -->
+
+  <!-- ========================================================================= -->
+  <!-- APP SHELL — logged-in experience (patient / doctor / admin)              -->
+  <!-- ========================================================================= -->
+  <div class="view app-shell" id="view-app">
+
+    <!-- ---------- SIDEBAR ---------- -->
+    <aside class="sidebar" id="sidebar">
+      <a href="#" class="brand" data-nav="landing">
+        <span class="brand-mark"><svg><use href="#nestmark"/></svg></span>
+        <span class="brand-name">Well&nbsp;Nest</span>
+      </a>
+
+      <!-- Patient nav -->
+      <nav class="side-nav" id="nav-patient" data-role-nav="patient">
+        <a href="#" class="side-link active" data-sub="overview"><i class="fa-solid fa-gauge"></i>Dashboard</a>
+        <a href="#" class="side-link" data-sub="find-doctors"><i class="fa-solid fa-magnifying-glass"></i>Find Doctors</a>
+        <a href="#" class="side-link" data-sub="appointments"><i class="fa-solid fa-calendar-days"></i>Appointments</a>
+        <a href="#" class="side-link" data-sub="records"><i class="fa-solid fa-file-medical"></i>Medical Records</a>
+        <a href="#" class="side-link" data-sub="prescriptions"><i class="fa-solid fa-prescription-bottle-medical"></i>Prescriptions</a>
+        <a href="#" class="side-link" data-sub="notifications"><i class="fa-solid fa-bell"></i>Notifications<span class="side-badge" id="patientNotifBadge"></span></a>
+        <a href="#" class="side-link" data-sub="profile"><i class="fa-solid fa-user"></i>Profile</a>
+      </nav>
+
+      <!-- Doctor nav -->
+      <nav class="side-nav hidden" id="nav-doctor" data-role-nav="doctor">
+        <a href="#" class="side-link active" data-sub="d-overview"><i class="fa-solid fa-gauge"></i>Dashboard</a>
+        <a href="#" class="side-link" data-sub="d-appointments"><i class="fa-solid fa-calendar-days"></i>Appointments</a>
+        <a href="#" class="side-link" data-sub="d-patients"><i class="fa-solid fa-users"></i>Patients</a>
+        <a href="#" class="side-link" data-sub="d-records"><i class="fa-solid fa-file-medical"></i>Medical Records</a>
+        <a href="#" class="side-link" data-sub="d-prescriptions"><i class="fa-solid fa-prescription-bottle-medical"></i>Prescriptions</a>
+        <a href="#" class="side-link" data-sub="d-schedule"><i class="fa-solid fa-clock"></i>Schedule</a>
+        <a href="#" class="side-link" data-sub="d-profile"><i class="fa-solid fa-user"></i>Profile</a>
+      </nav>
+
+      <!-- Admin nav -->
+      <nav class="side-nav hidden" id="nav-admin" data-role-nav="admin">
+        <a href="#" class="side-link active" data-sub="a-overview"><i class="fa-solid fa-gauge"></i>Dashboard</a>
+        <a href="#" class="side-link" data-sub="a-patients"><i class="fa-solid fa-users"></i>Patients</a>
+        <a href="#" class="side-link" data-sub="a-doctors"><i class="fa-solid fa-user-doctor"></i>Doctors</a>
+        <a href="#" class="side-link" data-sub="a-departments"><i class="fa-solid fa-hospital"></i>Departments</a>
+        <a href="#" class="side-link" data-sub="a-appointments"><i class="fa-solid fa-calendar-days"></i>Appointments</a>
+        <a href="#" class="side-link" data-sub="a-beds"><i class="fa-solid fa-bed-pulse"></i>Bed Management</a>
+        <a href="#" class="side-link" data-sub="a-billing"><i class="fa-solid fa-file-invoice-dollar"></i>Billing</a>
+        <a href="#" class="side-link" data-sub="a-reports"><i class="fa-solid fa-chart-pie"></i>Reports</a>
+        <a href="#" class="side-link" data-sub="a-settings"><i class="fa-solid fa-gear"></i>Settings</a>
+      </nav>
+
+      <button class="side-link logout" id="logoutBtn"><i class="fa-solid fa-arrow-right-from-bracket"></i>Logout</button>
+    </aside>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- ---------- MAIN COLUMN ---------- -->
+    <div class="main-col">
+      <header class="topbar">
+        <button class="icon-btn" id="sidebarToggle" aria-label="Toggle menu"><i class="fa-solid fa-bars"></i></button>
+        <h1 class="topbar-title" id="topbarTitle">Dashboard</h1>
+        <div class="topbar-actions">
+          <div class="bell-wrap">
+            <button class="icon-btn" id="bellBtn" aria-label="Notifications"><i class="fa-solid fa-bell"></i><span class="dot" id="bellDot"></span></button>
+            <div class="notif-dropdown hidden" id="notifDropdown"></div>
+          </div>
+          <div class="topbar-user">
+            <span class="avatar" id="topbarAvatar">RS</span>
+            <span class="topbar-username" id="topbarUsername">Rahul Sharma</span>
+          </div>
+        </div>
+      </header>
+
+      <main class="page-content" id="pageContent">
+
+        <!-- ============ PATIENT: OVERVIEW ============ -->
+        <section class="subview" id="sub-overview" data-role="patient">
+          <div class="stat-grid">
+            <div class="stat-card"><i class="fa-solid fa-calendar-check"></i><div><strong id="statUpcoming">0</strong><span>Upcoming Appointments</span></div></div>
+            <div class="stat-card"><i class="fa-solid fa-clock-rotate-left"></i><div><strong id="statPrevious">0</strong><span>Previous Appointments</span></div></div>
+            <div class="stat-card"><i class="fa-solid fa-file-medical"></i><div><strong id="statRecords">0</strong><span>Medical Records</span></div></div>
+            <div class="stat-card"><i class="fa-solid fa-prescription-bottle-medical"></i><div><strong id="statPrescriptions">0</strong><span>Prescriptions</span></div></div>
+          </div>
+
+          <h2 class="subsection-title">Your next appointment</h2>
+          <div id="nextAppointmentCard" class="appointment-highlight"></div>
+        </section>
+
+        <!-- ============ PATIENT: FIND DOCTORS ============ -->
+        <section class="subview hidden" id="sub-find-doctors" data-role="patient">
+          <div class="filter-bar">
+            <input type="text" id="docSearchInput" placeholder="Search doctors by name...">
+            <select id="docSpecFilter"><option value="">All specializations</option></select>
+            <select id="docLocFilter"><option value="">All locations</option></select>
+            <select id="docAvailFilter">
+              <option value="">Any availability</option>
+              <option value="Today">Available today</option>
+              <option value="This week">Available this week</option>
+            </select>
+          </div>
+          <div class="card-grid" id="doctorSearchGrid"></div>
+        </section>
+
+        <!-- ============ PATIENT: APPOINTMENTS ============ -->
+        <section class="subview hidden" id="sub-appointments" data-role="patient">
+          <div class="tabs">
+            <button class="tab active" data-tab="upcoming">Upcoming</button>
+            <button class="tab" data-tab="previous">Previous</button>
+          </div>
+          <div class="table-wrap">
+            <table id="apptTableUpcoming">
+              <thead><tr><th>Doctor</th><th>Department</th><th>Date</th><th>Time</th><th>Status</th><th>Action</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="table-wrap hidden" id="apptTableWrapPrevious">
+            <table id="apptTablePrevious">
+              <thead><tr><th>Doctor</th><th>Department</th><th>Date</th><th>Time</th><th>Status</th><th>Action</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ============ PATIENT: MEDICAL RECORDS ============ -->
+        <section class="subview hidden" id="sub-records" data-role="patient">
+          <div class="timeline" id="recordsTimeline"></div>
+        </section>
+
+        <!-- ============ PATIENT: PRESCRIPTIONS ============ -->
+        <section class="subview hidden" id="sub-prescriptions" data-role="patient">
+          <div id="prescriptionList"></div>
+        </section>
+
+        <!-- ============ PATIENT: NOTIFICATIONS ============ -->
+        <section class="subview hidden" id="sub-notifications" data-role="patient">
+          <div class="notif-list-page" id="notifListPage"></div>
+        </section>
+
+        <!-- ============ PATIENT: PROFILE ============ -->
+        <section class="subview hidden" id="sub-profile" data-role="patient">
+          <div class="profile-card" id="patientProfileCard"></div>
+        </section>
+
+        <!-- ============ DOCTOR: OVERVIEW ============ -->
+        <section class="subview hidden" id="sub-d-overview" data-role="doctor">
+          <div class="stat-grid">
+            <div class="stat-card"><i class="fa-solid fa-calendar-day"></i><div><strong id="dStatToday">0</strong><span>Today's Appointments</span></div></div>
+            <div class="stat-card"><i class="fa-solid fa-users"></i><div><strong id="dStatPatients">0</strong><span>Total Patients</span></div></div>
+            <div class="stat-card"><i class="fa-solid fa-circle-check"></i><div><strong id="dStatCompleted">0</strong><span>Completed</span></div></div>
+            <div class="stat-card"><i class="fa-solid fa-hourglass-half"></i><div><strong id="dStatPending">0</strong><span>Pending</span></div></div>
+          </div>
+          <h2 class="subsection-title">Today's appointments</h2>
+          <div class="table-wrap">
+            <table id="doctorTodayTable">
+              <thead><tr><th>Patient</th><th>Time</th><th>Reason</th><th>Status</th><th>Action</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ============ DOCTOR: APPOINTMENTS ============ -->
+        <section class="subview hidden" id="sub-d-appointments" data-role="doctor">
+          <div class="table-wrap">
+            <table id="doctorApptTable">
+              <thead><tr><th>Patient</th><th>Date</th><th>Time</th><th>Reason</th><th>Status</th><th>Action</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ============ DOCTOR: PATIENTS ============ -->
+        <section class="subview hidden" id="sub-d-patients" data-role="doctor">
+          <div class="card-grid" id="doctorPatientGrid"></div>
+        </section>
+
+        <!-- ============ DOCTOR: RECORDS ============ -->
+        <section class="subview hidden" id="sub-d-records" data-role="doctor">
+          <div class="timeline" id="doctorRecordsTimeline"></div>
+        </section>
+
+        <!-- ============ DOCTOR: PRESCRIPTIONS ============ -->
+        <section class="subview hidden" id="sub-d-prescriptions" data-role="doctor">
+          <button class="btn btn-primary" id="newPrescriptionBtn" style="margin-bottom:16px"><i class="fa-solid fa-plus"></i> New prescription</button>
+          <div id="doctorPrescriptionList"></div>
+        </section>
+
+        <!-- ============ DOCTOR: SCHEDULE ============ -->
+        <section class="subview hidden" id="sub-d-schedule" data-role="doctor">
+          <p class="muted">Toggle your available time slots for the week.</p>
+          <div class="slot-grid" id="scheduleGrid"></div>
+        </section>
+
+        <!-- ============ DOCTOR: PROFILE ============ -->
+        <section class="subview hidden" id="sub-d-profile" data-role="doctor">
+          <div class="profile-card" id="doctorProfileCard"></div>
+        </section>
+
+        <!-- ============ ADMIN: OVERVIEW ============ -->
+        <section class="subview hidden" id="sub-a-overview" data-role="admin">
+          <div class="stat-grid">
+            <div class="stat-card"><i class="fa-solid fa-users"></i><div><strong>1,250</strong><span>Total Patients</span></div></div>
+            <div class="stat-card"><i class="fa-solid fa-user-doctor"></i><div><strong>48</strong><span>Total Doctors</span></div></div>
+            <div class="stat-card"><i class="fa-solid fa-calendar-day"></i><div><strong>86</strong><span>Today's Appointments</span></div></div>
+            <div class="stat-card"><i class="fa-solid fa-bed-pulse"></i><div><strong>27</strong><span>Available Beds</span></div></div>
+          </div>
+
+          <div class="chart-row">
+            <div class="chart-card">
+              <h3>Monthly appointments</h3>
+              <div class="bar-chart" id="chartMonthly"></div>
+            </div>
+            <div class="chart-card">
+              <h3>Completed vs cancelled</h3>
+              <div class="donut-wrap">
+                <svg viewBox="0 0 120 120" class="donut" id="chartDonut"></svg>
+                <ul class="legend" id="donutLegend"></ul>
+              </div>
+            </div>
+          </div>
+          <div class="chart-card">
+            <h3>Patients by department</h3>
+            <div class="bar-chart horizontal" id="chartDept"></div>
+          </div>
+        </section>
+
+        <!-- ============ ADMIN: PATIENTS ============ -->
+        <section class="subview hidden" id="sub-a-patients" data-role="admin">
+          <div class="table-wrap">
+            <table id="adminPatientTable">
+              <thead><tr><th>Name</th><th>Age</th><th>Contact</th><th>Last visit</th><th>Assigned doctor</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ============ ADMIN: DOCTORS ============ -->
+        <section class="subview hidden" id="sub-a-doctors" data-role="admin">
+          <div class="card-grid" id="adminDoctorGrid"></div>
+        </section>
+
+        <!-- ============ ADMIN: DEPARTMENTS ============ -->
+        <section class="subview hidden" id="sub-a-departments" data-role="admin">
+          <div class="card-grid" id="adminDeptGrid"></div>
+        </section>
+
+        <!-- ============ ADMIN: APPOINTMENTS ============ -->
+        <section class="subview hidden" id="sub-a-appointments" data-role="admin">
+          <div class="table-wrap">
+            <table id="adminApptTable">
+              <thead><tr><th>Patient</th><th>Doctor</th><th>Department</th><th>Date</th><th>Time</th><th>Status</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ============ ADMIN: BED MANAGEMENT ============ -->
+        <section class="subview hidden" id="sub-a-beds" data-role="admin">
+          <div class="stat-grid">
+            <div class="stat-card"><i class="fa-solid fa-bed"></i><div><strong>100</strong><span>Total Beds</span></div></div>
+            <div class="stat-card"><i class="fa-solid fa-bed-pulse"></i><div><strong>68</strong><span>Occupied</span></div></div>
+            <div class="stat-card"><i class="fa-solid fa-check"></i><div><strong>27</strong><span>Available</span></div></div>
+            <div class="stat-card"><i class="fa-solid fa-screwdriver-wrench"></i><div><strong>5</strong><span>Maintenance</span></div></div>
+          </div>
+          <div class="progress-block">
+            <div class="progress-row"><span>Occupied</span><div class="progress"><div class="progress-fill occupied" style="width:68%"></div></div><span>68%</span></div>
+            <div class="progress-row"><span>Available</span><div class="progress"><div class="progress-fill available" style="width:27%"></div></div><span>27%</span></div>
+            <div class="progress-row"><span>Maintenance</span><div class="progress"><div class="progress-fill maintenance" style="width:5%"></div></div><span>5%</span></div>
+          </div>
+        </section>
+
+        <!-- ============ ADMIN: BILLING ============ -->
+        <section class="subview hidden" id="sub-a-billing" data-role="admin">
+          <div class="invoice-card" id="invoiceCard"></div>
+        </section>
+
+        <!-- ============ ADMIN: REPORTS ============ -->
+        <section class="subview hidden" id="sub-a-reports" data-role="admin">
+          <div class="chart-card">
+            <h3>Monthly appointments</h3>
+            <div class="bar-chart" id="chartMonthly2"></div>
+          </div>
+        </section>
+
+        <!-- ============ ADMIN: SETTINGS ============ -->
+        <section class="subview hidden" id="sub-a-settings" data-role="admin">
+          <div class="profile-card">
+            <h3>Hospital settings</h3>
+            <p class="muted">This is a frontend-only prototype. Settings here are for demonstration and are not persisted beyond your browser's local storage.</p>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div> <!-- /view-app -->
+
+</div> <!-- /app -->
+
+<!-- =================================================================== -->
+<!-- MODAL: Book Appointment                                             -->
+<!-- =================================================================== -->
+<div class="modal-backdrop hidden" id="bookingModal">
+  <div class="modal">
+    <button class="modal-close" data-close-modal="bookingModal"><i class="fa-solid fa-xmark"></i></button>
+    <h3>Book an appointment</h3>
+    <form id="bookingForm" novalidate>
+      <label>Doctor
+        <select id="bookDoctor"></select>
+      </label>
+      <label>Department
+        <input type="text" id="bookDepartment" readonly>
+      </label>
+      <label>Date
+        <input type="date" id="bookDate">
+        <span class="field-error" id="err-bookDate"></span>
+      </label>
+      <label>Available time slot
+        <select id="bookSlot"><option value="">Select a date first</option></select>
+        <span class="field-error" id="err-bookSlot"></span>
+      </label>
+      <label>Reason for visit
+        <textarea id="bookReason" rows="3" placeholder="Briefly describe your symptoms or reason"></textarea>
+        <span class="field-error" id="err-bookReason"></span>
+      </label>
+      <button type="submit" class="btn btn-primary btn-block">Confirm appointment</button>
+    </form>
+  </div>
+</div>
+
+<!-- =================================================================== -->
+<!-- MODAL: Appointment Details                                          -->
+<!-- =================================================================== -->
+<div class="modal-backdrop hidden" id="detailsModal">
+  <div class="modal">
+    <button class="modal-close" data-close-modal="detailsModal"><i class="fa-solid fa-xmark"></i></button>
+    <h3>Appointment details</h3>
+    <div id="detailsModalBody"></div>
+  </div>
+</div>
+
+<!-- =================================================================== -->
+<!-- MODAL: New Prescription (doctor)                                    -->
+<!-- =================================================================== -->
+<div class="modal-backdrop hidden" id="prescriptionModal">
+  <div class="modal">
+    <button class="modal-close" data-close-modal="prescriptionModal"><i class="fa-solid fa-xmark"></i></button>
+    <h3>Create prescription</h3>
+    <form id="prescriptionForm" novalidate>
+      <label>Patient
+        <select id="rxPatient"></select>
+      </label>
+      <label>Medicine name
+        <input type="text" id="rxMedName" placeholder="e.g. Amoxicillin">
+      </label>
+      <label>Dosage
+        <input type="text" id="rxDosage" placeholder="e.g. 1 tablet">
+      </label>
+      <label>Frequency
+        <input type="text" id="rxFrequency" placeholder="e.g. Morning &amp; night">
+      </label>
+      <label>Instructions
+        <textarea id="rxInstructions" rows="2" placeholder="Take with food..."></textarea>
+      </label>
+      <label>Follow-up date
+        <input type="date" id="rxFollowup">
+      </label>
+      <button type="submit" class="btn btn-primary btn-block">Save prescription</button>
+    </form>
+  </div>
+</div>
+
+<!-- =================================================================== -->
+<!-- MODAL: Logout confirmation                                          -->
+<!-- =================================================================== -->
+<div class="modal-backdrop hidden" id="logoutModal">
+  <div class="modal modal-sm">
+    <h3>Log out of Well Nest?</h3>
+    <p class="muted">You'll need to log in again to reach your dashboard.</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" data-close-modal="logoutModal">Cancel</button>
+      <button class="btn btn-primary" id="confirmLogoutBtn">Log out</button>
+    </div>
+  </div>
+</div>
+
+<!-- =================================================================== -->
+<!-- PRINT AREA (used by window.print for prescriptions & invoices)      -->
+<!-- =================================================================== -->
+<div id="printArea" class="print-only"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
